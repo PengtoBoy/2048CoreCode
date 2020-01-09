@@ -1,0 +1,111 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace _2048arithmetic
+{
+    class Program
+    {
+        /*上移
+         * --从上到下获取列数据，形成一维数组
+         * --合并数据
+         *   --去零：将0元素移动至末尾
+         *   --相邻相同则合并（后一个元素累加到前一个元素上面，后一个元素清零）
+         *   --去零：将0元素移动至末尾
+         *--将一维数组还原至原列
+         * 下移
+         * --从下到上获取列数据，形成一维数组
+         *   --去零：将0元素移动至末尾
+         *   --相邻相同则合并（后一个元素累加到前一个元素上面，后一个元素清零）
+         *   --去零：将0元素移动至末尾
+         *--将一维数组还原至原列
+         * 左移
+         * 右移
+         */
+        static void Main(string[] args)
+        {
+            int[,] map = new int[,] {
+                {2,2,4,8},
+                {2,4,4,4},
+                {0,8,4,0},
+                {2,4,0,4}
+            };
+            Console.WriteLine("上移");
+            map = MoveUp(map);//上移
+            PrintArray(map);
+            Console.WriteLine("下移");
+            map = MoveDown(map);//下移
+            PrintArray(map);//打印
+            Console.ReadLine();
+        }
+        private static void PrintArray(int[,] array)
+        {
+            for(int r=0;r<array.GetLength(0);r++)
+            {
+                for(int c=0;c<array.GetLength(1);c++)
+                    Console.Write(array[r,c]+"\t");
+                Console.WriteLine();
+            }
+        }
+        private static void MoveZeroToEnd(int[] array)
+        {
+            for (int j = 0; j < array.Length - 1; j++)
+            {
+                for (int i = j; i < array.Length - 1; i++)
+                {
+                    if (array[i] == 0)
+                    {
+                        int table = array[i + 1];
+                        array[i + 1] = array[i];
+                        array[i] = table;
+                    }
+                }
+            }
+        }
+        private static void CloseToAdd(int[] array)
+        {
+            for(int i=1;i<array.Length-1;i++)
+            {
+                if(array[i]!=0&&array[i]==array[i+1])
+                {
+                    array[i] *= 2;
+                    array[i + 1] = 0;
+                }
+            }
+        }
+        private static int[] Merge(int [] array)
+        {
+            MoveZeroToEnd(array);
+            CloseToAdd(array);
+            MoveZeroToEnd(array);
+            return array;
+        }
+        private static int[,] MoveUp(int[,] map)
+        {
+            int[] mergeArray = new int[map.GetLength(0)];
+            for (int c = 0; c < map.GetLength(1); c++)
+            {
+                for (int r = 0; r < map.GetLength(0); r++)
+                    mergeArray[r] = map[r, c];
+                mergeArray = Merge(mergeArray);
+                for (int r = 0; r < map.GetLength(0); r++)
+                    map[r, c] = mergeArray[r];
+            }
+            return map;
+        }
+        private static int[,] MoveDown(int[,] map)
+        {
+            int[] mergeArray = new int[map.GetLength(0)];
+            for (int c=0;c<map.GetLength(1);c++)
+            {
+                for(int r=map.GetLength(0)-1;r>=0;r--)
+                    mergeArray[map.GetLength(0) - 1 - r] = map[r, c];
+                mergeArray = Merge(mergeArray);
+                for (int r = map.GetLength(0) - 1; r >= 0; r--)
+                    map[r, c] = mergeArray[map.GetLength(0) - 1 - r];
+            }
+            return map;
+        }
+    }

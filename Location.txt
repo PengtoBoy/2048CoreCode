@@ -1,0 +1,19 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace _2048CoreClass
+{
+    struct Location
+    {
+        public int Rindex { get; set; }
+        public int Cindex { get; set; }
+        public Location(int rindex,int cindex):this()
+        {
+            this.Rindex = rindex;
+            this.Cindex = cindex;
+        }
+    }
+}

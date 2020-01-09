@@ -1,0 +1,229 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace _2048CoreClass
+{
+    class GameCore
+    {
+        private int[,] map;
+        private int[] mergeArray;
+        public int[,] Map
+        {
+            get { return this.map; }
+        }
+        /// <summary>
+        /// 地图是否发生改变
+        /// </summary>
+        public bool IsChange { set; get; }
+        private int[,] originMap;
+        public GameCore()
+        {
+            map = new int[4, 4];
+            mergeArray = new int[4];
+            emptyLocation = new List<Location>(16);
+            random = new Random();
+            originMap = new int[4, 4];
+        }
+        #region 数据去零合并
+        private void PrintArray()
+        {
+            for (int r = 0; r < map.GetLength(0); r++)
+            {
+                for (int c = 0; c < map.GetLength(1); c++)
+                    Console.Write(map[r, c] + "\t");
+                Console.WriteLine();
+            }
+        }
+        //将0移动至末尾
+        private  void MoveZeroToEnd()
+        {
+            for (int j = 0; j < mergeArray.Length - 1; j++)
+            {
+                for (int i = j; i < mergeArray.Length - 1; i++)
+                {
+                    if (mergeArray[i] == 0)
+                    {
+                        int table = mergeArray[i + 1];
+                        mergeArray[i + 1] = mergeArray[i];
+                        mergeArray[i] = table;
+                    }
+                }
+            }
+        }
+        
+//相邻合并相加，后一个清0
+        private void CloseToAdd()
+        {
+            for (int i = 0; i < mergeArray.Length - 1; i++)
+            {
+                if (mergeArray[i] != 0 && mergeArray[i] == mergeArray[i + 1])
+                {
+                    mergeArray[i]=mergeArray[i]*2;
+                    mergeArray[i + 1] = 0;
+                }
+            }
+        }
+        private void Merge()
+        {
+            MoveZeroToEnd();
+            CloseToAdd();
+            MoveZeroToEnd();
+        }
+        #endregion
+        #region 移动
+        private void MoveUp()
+        {
+            
+            for (int c = 0; c < map.GetLength(1); c++)
+            {
+                for (int r = 0; r < map.GetLength(0); r++)
+                    mergeArray[r] = map[r, c];
+                    Merge();
+                for (int r = 0; r < map.GetLength(0); r++)
+                    map[r, c] = mergeArray[r];
+            }
+        }
+        private void MoveDown()
+        {
+            for (int c = 0; c < map.GetLength(1); c++)
+            {
+                for (int r = map.GetLength(0) - 1; r >= 0; r--)
+                    mergeArray[map.GetLength(0) - r - 1] = map[r, c];
+                Merge();
+                for (int r = map.GetLength(0) - 1; r >= 0; r--)
+                    map[r, c] = mergeArray[map.GetLength(0) - 1 - r];
+            }
+        }
+        private void MoveLeft()
+        {
+            for(int r=0;r<map.GetLength(0);r++)
+            {
+                for(int c=0;c<map.GetLength(1);c++)
+                    mergeArray[c] = map[r,c];
+                    Merge();
+                for (int c= 0; c < map.GetLength(0); c++)
+                    map[r, c] = mergeArray[c];
+            }
+        }
+        private void MoveRight()
+        {
+            for (int r = 0; r < map.GetLength(0); r++)
+            {
+                for (int c = map.GetLength(1) - 1; c >= 0; c--)
+                    mergeArray[map.GetLength(1) - c - 1] = map[r, c];
+                Merge();
+                for (int c = map.GetLength(1) - 1; c >= 0; c--)
+                    map[r, c] = mergeArray[map.GetLength(1) - c - 1];
+            }
+        }
+        public void Move(MoveDirection moveDirection)
+        {
+            Array.Copy(map,originMap,map.Length);
+            IsChange = false;
+            switch (moveDirection)
+            {
+                case MoveDirection.Up:
+                    MoveUp();
+                    break;
+                case MoveDirection.Down:
+                    MoveDown();
+                    break;
+                case MoveDirection.Right:
+                    MoveRight();
+                    break;
+                case MoveDirection.Left:
+                    MoveLeft();
+                    break;
+            }
+            for(int r=0;r<map.GetLength(0);r++)
+            {
+                for(int c=0;c<map.GetLength(1);c++)
+                {
+                    if (map[r, c] != originMap[r, c])
+                    {
+                        IsChange = true;
+                        return;
+                    }
+                }
+            }
+        }
+        #endregion
+        #region 在空位生成新数字
+        private List<Location> emptyLocation;
+        /// <summary>
+        /// 找出空位置
+        /// </summary>
+        private void CalculateEmptyLocation()
+        {
+            emptyLocation.Clear();
+            for(int r=0;r<map.GetLength(0);r++)
+                for(int c=0;c<map.GetLength(1);c++)
+                {
+                    if(map[r,c]==0)
+                    {
+                        emptyLocation.Add(new Location(r, c));
+                    }
+                }
+
+        }
+        private Random random;
+        /// <summary>
+        /// 在空位置上随机生成一个数 2->90%,4->10%
+        /// </summary>
+        public void GenerateNumber()
+        {
+            CalculateEmptyLocation();
+            if (emptyLocation.Count>0)
+            {
+                int randomIndex = random.Next(0, emptyLocation.Count);
+                Location loc = emptyLocation[randomIndex];
+                map[loc.Rindex, loc.Cindex] = (random.Next(0, 10) == 1 ? 4 : 2);
+            }
+     
+        }
+        #endregion
+        #region GameOver
+        private bool CannotMove()
+        {
+            for(int r=0;r<map.GetLength(0);r++)
+            {
+                for(int c=0;c<map.GetLength(1)-1;c++)
+                {
+                    if (map[r, c] == map[r, c + 1])
+                        return false;
+                }
+            }
+            for(int c=0;c<map.GetLength(1);c++)
+            {
+                for(int r=0;r<map.GetLength(0)-1;r++)
+                {
+                    if (map[r, c] == map[r + 1, c])
+                        return false;
+                }
+            }
+            return true;
+        }
+        private bool Full()
+        {
+            for (int r = 0; r < map.GetLength(0); r++)
+            {
+                for (int c = 0; c < map.GetLength(1); c++)
+                {
+                    if (map[r, c] == 0)
+                        return false;
+                }
+            }
+            return true;
+        }
+        public bool GameOver()
+        {
+            if (Full()==true && CannotMove()==true)
+                return true;
+            return false; ;
+        }
+        #endregion
+    }
+}
