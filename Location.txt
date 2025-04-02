@@ -20,3 +20,4 @@ namespace _2048CoreClass
 
 
 ali: LTAI5tMHG5q8PgJE5xVQfd4f
+vol: AKLTZGU5OTJkZjc2NGU1NDBjOTkxNmE2OTIxM2RiNGJkOTg
