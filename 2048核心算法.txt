@@ -8,21 +8,21 @@ namespace _2048arithmetic
 {
     class Program
     {
-        /*����
-         * --���ϵ��»�ȡ�����ݣ��γ�һά����
-         * --�ϲ�����
-         *   --ȥ�㣺��0Ԫ���ƶ���ĩβ
-         *   --������ͬ��ϲ�����һ��Ԫ���ۼӵ�ǰһ��Ԫ�����棬��һ��Ԫ�����㣩
-         *   --ȥ�㣺��0Ԫ���ƶ���ĩβ
-         *--��һά���黹ԭ��ԭ��
-         * ����
-         * --���µ��ϻ�ȡ�����ݣ��γ�һά����
-         *   --ȥ�㣺��0Ԫ���ƶ���ĩβ
-         *   --������ͬ��ϲ�����һ��Ԫ���ۼӵ�ǰһ��Ԫ�����棬��һ��Ԫ�����㣩
-         *   --ȥ�㣺��0Ԫ���ƶ���ĩβ
-         *--��һά���黹ԭ��ԭ��
-         * ����
-         * ����
+        /*上移
+         * --从上到下获取列数据，形成一维数组
+         * --合并数据
+         *   --去零：将0元素移动至末尾
+         *   --相邻相同则合并（后一个元素累加到前一个元素上面，后一个元素清零）
+         *   --去零：将0元素移动至末尾
+         *--将一维数组还原至原列
+         * 下移
+         * --从下到上获取列数据，形成一维数组
+         *   --去零：将0元素移动至末尾
+         *   --相邻相同则合并（后一个元素累加到前一个元素上面，后一个元素清零）
+         *   --去零：将0元素移动至末尾
+         *--将一维数组还原至原列
+         * 左移
+         * 右移
          */
         static void Main(string[] args)
         {
@@ -32,12 +32,12 @@ namespace _2048arithmetic
                 {0,8,4,0},
                 {2,4,0,4}
             };
-            Console.WriteLine("����");
-            map = MoveUp(map);//����
+            Console.WriteLine("上移");
+            map = MoveUp(map);//上移
             PrintArray(map);
-            Console.WriteLine("����");
-            map = MoveDown(map);//����
-            PrintArray(map);//��ӡ
+            Console.WriteLine("下移");
+            map = MoveDown(map);//下移
+            PrintArray(map);//打印
             Console.ReadLine();
         }
         private static void PrintArray(int[,] array)
@@ -109,3 +109,4 @@ namespace _2048arithmetic
             return map;
         }
     }
+ALTAKt0MYWLYNryBgLL7L6WOU1
