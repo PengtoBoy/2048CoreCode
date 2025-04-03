@@ -109,4 +109,3 @@ namespace _2048arithmetic
             return map;
         }
     }
-ALTAKt0MYWLYNryBgLL7L6WOU1
